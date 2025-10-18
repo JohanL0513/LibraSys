@@ -1,0 +1,123 @@
+.pagina-inicio {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #0b132b, #1e3a8a, #60a5fa);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.header button {
+  background: #0b132b;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.header button:hover {
+  background: #3a86ff;
+}
+
+.header .activo {
+  background: #3a86ff;
+}
+
+.form-container {
+  background: white;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  width: 430px;
+}
+
+h2 {
+  text-align: center;
+  color: #0d1b2a;
+  margin-bottom: 0.3rem;
+}
+
+.marca {
+  color: #3a86ff;
+}
+
+.descripcion {
+  text-align: center;
+  color: #5c677d;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+hr {
+  margin: 1rem 0 1.5rem 0;
+}
+
+h3 {
+  color: #0d1b2a;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.fila {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.campo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem; /* 🟢 más espacio entre campos */
+}
+
+.campo label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.campo input,
+.campo select {
+  padding: 0.6rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #3a86ff;
+  outline: none;
+}
+
+.btn-primario {
+  background-color: #3a86ff;
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem; /* 🟢 un poco más alto para mejor proporción */
+  width: 100%;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 0.8rem; /* 🟢 separa el botón del campo de contraseña */
+}
+
+.btn-primario:hover {
+  background-color: #2d6cdf;
+}
+
+.label{
+  color:#2d6cdf;
+}

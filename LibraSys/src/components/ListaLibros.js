@@ -5,74 +5,86 @@ export default {
   data() {
     return {
       termino: "",
-      categorias: [
-        { id: 1, titulo: "Libros", items: ["Todos", "Infantil", "Juvenil", "Adultos"] },
-        { id: 2, titulo: "Ficción", items: ["Novela", "Ciencia ficción", "Misterio", "Romántica"] },
-        { id: 3, titulo: "No ficción", items: ["Historia", "Ciencia", "Ensayo", "Biografías"] },
-        { id: 4, titulo: "Bonos", items: ["Descuentos", "Paquetes", "Cupones"] },
-        { id: 5, titulo: "Promociones", items: ["Ofertas", "2x1", "Lanzamientos"] }
-      ],
-      openIndex: null,
-      hoverIndex: null,
+      filtroLetra: "TODOS",
+      letras: [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "#", "TODOS"],
 
-      destacados: [
-        { titulo: "El rugido de nuestro tiempo", autor: "Carlos Granés", portada: "https://via.placeholder.com/150x220" },
-        { titulo: "No hay nada malo en ti", autor: "Marta Segrelles", portada: "https://via.placeholder.com/150x220" },
-        { titulo: "Armero", autor: "Mario Villalobos", portada: "https://via.placeholder.com/150x220" }
-      ],
-      libros: [
-        { titulo: "Cien años de soledad", autor: "Gabriel García Márquez", portada: "https://via.placeholder.com/150x220", categoria: "Novela" },
-        { titulo: "Rayuela", autor: "Julio Cortázar", portada: "https://via.placeholder.com/150x220", categoria: "Novela" },
-        { titulo: "El Principito", autor: "Antoine de Saint-Exupéry", portada: "https://via.placeholder.com/150x220", categoria: "Infantil" },
-        { titulo: "Breves respuestas", autor: "Stephen Hawking", portada: "https://via.placeholder.com/150x220", categoria: "Ciencia" },
-      ],
-      filtroActual: { categoria: null, sub: null }
+      libros: [], // 🔹 Solo libros desde la API
+      filtroActual: { categoria: null, sub: null },
+      cargando: false,
+      error: null,
     };
   },
+
   computed: {
     librosFiltrados() {
-      let list = this.libros.slice();
+      let lista = this.libros.slice();
 
-      if (this.termino) {
+      if (this.termino.trim() !== "") {
         const t = this.termino.toLowerCase();
-        list = list.filter(
+        lista = lista.filter(
           (b) =>
-            b.titulo.toLowerCase().includes(t) ||
-            b.autor.toLowerCase().includes(t) ||
-            (b.categoria && b.categoria.toLowerCase().includes(t))
+            b.titulo?.toLowerCase().includes(t) ||
+            b.autor?.toLowerCase().includes(t) ||
+            b.categoria?.toLowerCase().includes(t)
         );
       }
 
-      if (this.filtroActual.sub && this.filtroActual.sub !== "Todos") {
-        list = list.filter((b) => b.categoria === this.filtroActual.sub);
+      if (this.filtroLetra !== "TODOS" && this.filtroLetra !== "#") {
+        lista = lista.filter(
+          (b) => b.titulo?.[0]?.toUpperCase() === this.filtroLetra
+        );
+      } else if (this.filtroLetra === "#") {
+        lista = lista.filter((b) => !/^[A-Z]/i.test(b.titulo?.[0] || ""));
       }
 
-      return list;
-    }
-  },
-  methods: {
-    toggleMenu(idx) {
-      this.openIndex = this.openIndex === idx ? null : idx;
+      return lista;
     },
-    filtrarCategoria(cat, sub) {
-      this.filtroActual = { categoria: cat, sub };
-      this.openIndex = null;
+  },
+
+  methods: {
+    async cargarLibros() {
+      this.cargando = true;
+      this.error = null;
+      try {
+        const res = await fetch("https://323bde55-c001-4f08-8b32-50ee8c177012.mock.pstmn.io/");
+        if (!res.ok) throw new Error("Error al cargar los libros.");
+        const data = await res.json();
+
+        console.log("📚 Datos recibidos de la API:");
+        console.table(data);
+
+        // 🧹 Eliminar duplicados por título
+        const sinDuplicados = Array.isArray(data)
+          ? data.filter(
+              (libro, index, self) =>
+                index === self.findIndex((b) => b.titulo === libro.titulo)
+            )
+          : [];
+
+        console.log(`✅ Libros cargados sin duplicados: ${sinDuplicados.length}`);
+        console.table(sinDuplicados);
+
+        this.libros = sinDuplicados;
+      } catch (err) {
+        console.error("❌ Error al obtener libros:", err);
+        this.error = "No se pudieron cargar los libros.";
+      } finally {
+        this.cargando = false;
+      }
+    },
+
+    filtrarPorLetra(letra) {
+      this.filtroLetra = letra;
     },
     buscar() {
-      // ya filtra con computed
+      this.filtroLetra = "TODOS";
     },
-    handleClickOutside(e) {
-      const node = this.$refs.submenus;
-      if (!node) return;
-      if (!node.contains(e.target)) {
-        this.openIndex = null;
-      }
+  },
+
+  mounted() {
+    // 🔹 Evita recargar si ya existen libros
+    if (this.libros.length === 0) {
+      this.cargarLibros();
     }
   },
-  mounted() {
-    document.addEventListener("click", this.handleClickOutside);
-  },
-  beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
-  }
 };
