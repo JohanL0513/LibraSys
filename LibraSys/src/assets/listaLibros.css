@@ -47,7 +47,8 @@ body {
 }
 
 .sidebar nav li {
-  padding: 0.8rem 1rem;
+  padding: 0.80rem 0.80rem; /* antes: 0.8rem 1rem */
+  margin-bottom: 0.2rem; /* agrega este margen para separar los botones */
   color: var(--color-texto-suave);
   border-radius: 10px;
   cursor: pointer;

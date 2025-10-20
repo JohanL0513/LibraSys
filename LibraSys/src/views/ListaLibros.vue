@@ -1,3 +1,5 @@
+listalibros.vue:
+AGREGALO VOS
 <template>
   <div class="layout">
     <!-- Sidebar -->
@@ -5,18 +7,16 @@
       <h1 class="logo">LibraSys</h1>
       <nav>
         <ul>
-          <li class="activo"> Biblioteca</li>
-          <li> Reserva de libros</li>
-          <li> Configuración</li>
-          <li> Soporte</li>
-          <li> Salir</li>
+          <li class="activo" @click="irBiblioteca">Biblioteca</li>
+          <li>Reserva de libros</li>
+          <li>Préstamos</li>
+          <li>Salir</li>
         </ul>
       </nav>
     </aside>
 
     <!-- Contenido principal -->
     <main class="contenido">
-      <!-- Header -->
       <header class="topbar">
         <div class="busqueda">
           <input
@@ -58,8 +58,9 @@
           v-for="(libro, i) in librosFiltrados"
           :key="i"
           class="libro-card"
+          @click="verDetalle(libro)"
         >
-          <img :src="libro.portada" :alt="libro.titulo" />
+          <img :src="libro.imagen" :alt="libro.titulo" />
           <h3>{{ libro.titulo }}</h3>
           <p class="autor">{{ libro.autor }}</p>
         </div>
@@ -70,7 +71,24 @@
 
 <script>
 import ListaLibros from "@/components/ListaLibros.js";
-export default ListaLibros;
+
+export default {
+  ...ListaLibros,
+  methods: {
+    ...ListaLibros.methods,
+   verDetalle(libro) {
+  this.$router.push({
+    name: "DetalleLibro",
+    params: { id: libro.id },
+  });
+}
+,
+    irBiblioteca() {
+      // 🔹 Siempre vuelve a la lista
+      this.$router.push({ name: "ListaLibros" });
+    },
+  },
+};
 </script>
 
 <style src="@/assets/listaLibros.css"></style>
