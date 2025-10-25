@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   user: 'postgres',       
   host: 'localhost',       
-  database: 'librasys',    
+  database: 'postgres',    
   password: '0513',      
   port: 5432,              
 });
@@ -12,7 +12,7 @@ const pool = new Pool({
 
 pool.connect()
   .then(client => {
-    console.log('Conectado a PostgreSQL (librasys)');
+    console.log('Conectado a PostgreSQL');
     client.release();
   })
   .catch(err => console.error('Error de conexión:', err.stack));

@@ -165,69 +165,8 @@ export default {
 </script>
 
 <style scoped>
-@import "@/assets/listaLibros.css";
+@import "@/assets/DetalleLibro.css";
 
-.detalle-libro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3rem;
-  min-height: 60vh;
-}
 
-.tarjeta-libro {
-  display: flex;
-  gap: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(11, 19, 43, 0.6);
-  padding: 2rem;
-  max-width: 900px;
-  color: var(--color-blanco);
-  backdrop-filter: blur(8px);
-}
-
-.portada {
-  width: 200px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-  object-fit: cover;
-}
-
-.info-libro {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.titulo {
-  font-size: 1.8rem;
-  color: var(--color-primario);
-}
-
-.autor {
-  font-size: 1.1rem;
-  color: var(--color-texto-suave);
-}
-
-.anio,
-.categoria {
-  color: var(--color-blanco);
-  font-weight: 500;
-  margin-top: 0.5rem;
-}
-
-.descripcion {
-  margin-top: 1rem;
-  color: var(--color-texto-suave);
-  font-size: 0.95rem;
-}
-
-.cargando,
-.mensaje-error {
-  text-align: center;
-  color: var(--color-blanco);
-  margin-top: 2rem;
-}
 </style>
 
