@@ -20,16 +20,24 @@
 <script>
 export default {
   name: "Verificacion2FA",
+  props: {
+    // Si prefieres pasar userId y endpoint desde el padre, puedes usar props
+    userId: { type: [String, Number], required: false }
+  },
   data() {
     return {
       codigoIngresado: "",
-      codigoCorrecto: "123456", // 👈 Código simulado, en un backend real se enviaría por correo o SMS
-      error: ""
+      error: "",
+      // Nota: en producción no dejes código "hardcodeado"; esto es solo para desarrollo local.
+      codigoCorrecto: "123456"
     };
   },
   methods: {
     verificarCodigo() {
+      // En este componente de ejemplo verificamos localmente si coincide con codigoCorrecto.
+      // Si tienes backend, reemplaza por fetch al endpoint /verify-2fa.
       if (this.codigoIngresado === this.codigoCorrecto) {
+        // ejemplo: redirigir a ListaLibros
         this.$router.push({ name: "ListaLibros" });
       } else {
         this.error = "❌ Código incorrecto. Intenta de nuevo.";

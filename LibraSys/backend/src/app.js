@@ -1,27 +1,15 @@
 // backend/src/app.js
-
 const express = require('express');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes'); // importamos las rutas de usuarios
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-
-// Permitir solicitudes desde el frontend (Vue en localhost:8080)
-app.use(cors({
-  origin: 'http://localhost:8080',
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
-
-// Middleware para leer JSON
+app.use(cors({ origin: 'http://localhost:8080', credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Rutas principales
 app.use('/api/users', userRoutes);
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('Servidor backend de LibraSys funcionando 🚀');
-});
+app.get('/', (req, res) => res.send('Servidor backend de LibraSys funcionando 🚀'));
 
 module.exports = app;

@@ -1,56 +1,56 @@
 <template>
-  <div class="layout">
-    <aside class="sidebar">
-      <h1 class="logo">LibraSys</h1>
-      <nav>
-        <ul>
-          <li @click="volverBiblioteca">Biblioteca</li>
-          <li>Reserva de libros</li>
-          <li>Préstamos</li>
-          <li>Salir</li>
-        </ul>
-      </nav>
-    </aside>
+  <section class="detalle-libro" v-if="cargando">
+    <p class="cargando">Cargando información del libro...</p>
+  </section>
 
-    <main class="contenido">
-      <header class="topbar">
-        <h2>Detalle del Libro</h2>
-      </header>
+  <section class="detalle-libro" v-else-if="libro">
+    <div class="tarjeta-libro">
+      <img :src="libro.imagen || placeholder" :alt="libro.titulo" class="portada" />
+      <div class="info-libro">
+        <h2 class="titulo">{{ libro.titulo }}</h2>
+        <p class="autor">Autor: {{ libro.autor }}</p>
+        <p class="anio">Año: {{ libro.año || "Desconocido" }}</p>
+        <p class="categoria">Categoría: {{ libro.categoria || "N/A" }}</p>
+        <p class="descripcion">{{ libro.descripcion || "Sin descripción disponible." }}</p>
 
-      <!-- estado de carga -->
-      <section class="detalle-libro" v-if="cargando">
-        <p class="cargando">Cargando información del libro...</p>
-      </section>
+        <button class="btn-previsualizar" @click="mostrarModal = true">
+          Previsualizar
+        </button>
+        <button class="btn-volver" @click="volverBiblioteca">
+          ← Volver
+        </button>
+      </div>
+    </div>
 
-      <!-- detalle -->
-      <section class="detalle-libro" v-else-if="libro">
-        <div class="tarjeta-libro">
-          <img :src="libro.imagen || placeholder" :alt="libro.titulo" class="portada" />
-          <div class="info-libro">
-            <h2 class="titulo">{{ libro.titulo }}</h2>
-            <p class="autor"> Autor :{{  libro.autor }}</p>
-            <p class="anio">  Año: {{ libro.año || "Desconocido" }}</p>
-            <p class="categoria">  Categoría: {{ libro.categoria || "N/A" }}</p>
-            <p class="descripcion">
-              {{ libro.descripcion || "Sin descripción disponible." }}
-            </p>
-          </div>
+
+    <div v-if="mostrarModal" class="modal-overlay" @click.self="cerrarModal">
+      <div class="modal-contenido">
+        <h3>Previsualización: {{ libro.titulo }}</h3>
+
+        <div v-if="libro.pdf" class="pdf-container">
+          <iframe
+            :src="pdfPreviewUrl(libro.pdf)"
+            width="100%"
+            height="100%"
+            style="border: none;"
+          ></iframe>
         </div>
-      </section>
 
-      <!-- error -->
-      <p v-else-if="error" class="mensaje-error">{{ error }}</p>
-    </main>
-  </div>
+        <p v-else>No hay PDF disponible para este libro.</p>
+
+        <button class="btn-cerrar" @click="cerrarModal">Cerrar</button>
+      </div>
+    </div>
+  </section>
+
+  <p v-else-if="error" class="mensaje-error">{{ error }}</p>
 </template>
 
 <script>
 export default {
   name: "DetalleLibro",
-
-  // id como prop ya no es obligatorio (aceptamos varias fuentes)
   props: {
-    id: { type: [String, Number], required: false }
+    id: { type: [String, Number], required: false },
   },
 
   data() {
@@ -58,56 +58,42 @@ export default {
       libro: null,
       cargando: true,
       error: null,
-      apiBase: "https://323bde55-c001-4f08-8b32-50ee8c177012.mock.pstmn.io/",
+      apiBase: "https://0bb83f20-aad4-466f-b2d8-3b014ae922f3.mock.pstmn.io",
       redirectDelayMs: 1200,
-      placeholder: "https://via.placeholder.com/200x300?text=Sin+imagen"
+      placeholder: "https://via.placeholder.com/200x300?text=Sin+imagen",
+      mostrarModal: false,
     };
   },
 
   computed: {
-    // resolvemos el id desde prop, params o query (prioridad en ese orden)
     idResuelto() {
-      // this.id (prop) puede ser undefined; chequeamos params y query
-      const fromProp = this.id;
-      const fromParams = this.$route && this.$route.params && this.$route.params.id;
-      const fromQuery = this.$route && this.$route.query && this.$route.query.id;
-
-      // Log para debug
-      console.log("DetalleLibro - sources:", { prop: fromProp, params: fromParams, query: fromQuery });
-
-      return (
-        (fromProp !== undefined && fromProp !== null && String(fromProp) !== "") ?
-          String(fromProp) :
-        (fromParams !== undefined && fromParams !== null && String(fromParams) !== "") ?
-          String(fromParams) :
-        (fromQuery !== undefined && fromQuery !== null && String(fromQuery) !== "") ?
-          String(fromQuery) :
-        null
-      );
-    }
+      return this.id ?? this.$route?.params?.id ?? null;
+    },
   },
 
   async mounted() {
-    console.log("DetalleLibro montado. idResuelto =", this.idResuelto);
     await this.cargarListaYBuscarPorId(this.idResuelto);
   },
 
   watch: {
-    // si cambia la ruta o prop, recargamos
-    "$route.params.id"(nv) {
-      console.log("watch $route.params.id ->", nv);
+    "$route.params.id"() {
       this.cargarListaYBuscarPorId(this.idResuelto);
     },
-    id(nv) {
-      console.log("watch prop id ->", nv);
-      this.cargarListaYBuscarPorId(this.idResuelto);
-    }
   },
 
   methods: {
-    
     volverBiblioteca() {
-      this.$router.push({ name: "ListaLibros" });
+      this.$router.push({ name: "Biblioteca" });
+    },
+
+    cerrarModal() {
+      this.mostrarModal = false;
+    },
+
+    pdfPreviewUrl(url) {
+      if (!url) return null;
+      const match = url.match(/\/d\/(.*?)\//);
+      return match ? `https://drive.google.com/file/d/${match[1]}/preview` : url;
     },
 
     async cargarListaYBuscarPorId(id) {
@@ -116,39 +102,27 @@ export default {
       this.libro = null;
 
       if (!id) {
-        // id es falsy: mostramos mensaje claro y redirigimos
-        console.warn("DetalleLibro: id inválido o no suministrado:", id);
-        this.error = "ID de libro inválido o no proporcionado. Redirigiendo a la biblioteca...";
+        this.error = "ID inválido. Redirigiendo…";
         this.programarRedirect();
         this.cargando = false;
         return;
       }
 
       try {
-        console.log("Fetching lista desde:", this.apiBase);
         const res = await fetch(this.apiBase);
-        if (!res.ok) throw new Error(`Fetch error ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const lista = await res.json();
+        const encontrado = lista.find((item) => String(item.id) === String(id));
 
-        if (!Array.isArray(lista)) {
-          console.error("Respuesta de API no es array:", lista);
-          this.error = "Respuesta inesperada de la API.";
-          this.programarRedirect();
-          return;
-        }
-
-        const encontrado = lista.find(item => String(item.id) === String(id));
         if (encontrado) {
           this.libro = encontrado;
-          console.log("Libro encontrado:", this.libro);
         } else {
-          console.warn("No se encontró libro con id:", id);
-          this.error = `No se encontró el libro con id ${id}. Redirigiendo...`;
+          this.error = `Libro con id ${id} no encontrado.`;
           this.programarRedirect();
         }
       } catch (err) {
-        console.error("Error al obtener lista:", err);
-        this.error = "Error al obtener información desde la API.";
+        this.error = `Error al obtener información: ${err.message}`;
         this.programarRedirect();
       } finally {
         this.cargando = false;
@@ -159,14 +133,12 @@ export default {
       setTimeout(() => {
         this.$router.replace({ name: "ListaLibros" });
       }, this.redirectDelayMs);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 @import "@/assets/DetalleLibro.css";
 
-
 </style>
-

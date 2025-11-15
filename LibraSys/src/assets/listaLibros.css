@@ -211,6 +211,18 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* === NUEVO: ÍNDICE ALFABÉTICO === */
+.indice-letras {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* 🔹 Centra el índice en el eje horizontal */
+  align-items: center;     /* 🔹 Centra verticalmente los botones */
+  gap: 0.6rem;
+  margin: 1rem auto 2rem auto;
+  max-width: 90%;          /* 🔹 Limita el ancho para mantenerlo visualmente centrado */
+  text-align: center;
+}
+
 .indice-letras button {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -221,6 +233,8 @@ body {
   cursor: pointer;
   transition: all 0.25s ease;
   backdrop-filter: blur(4px);
+  min-width: 40px;
+  text-align: center;
 }
 
 .indice-letras button:hover {
@@ -236,6 +250,7 @@ body {
   border-color: var(--color-primario);
   box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
 }
+
 
 .mensaje-carga,
 .mensaje-error {

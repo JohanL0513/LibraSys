@@ -1,0 +1,169 @@
+/* === Diseño principal === */
+.reserva-libro {
+  padding: 50px 30px;
+  max-width: 1300px;
+  margin: 0 auto;
+  text-align: center;
+  color: #e2e8f0;
+}
+.titulo {
+  font-size: 2rem;
+  color: #60a5fa;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+.subtitulo {
+  color: #94a3b8;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+}
+
+/* === Tarjetas === */
+.lista-libros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  justify-items: center;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+.tarjeta-libro:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+.portada {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+.info-libro {
+  text-align: center;
+  color: #e2e8f0;
+  flex-grow: 1;
+}
+.titulo-libro {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 6px;
+  min-height: 40px;
+}
+.autor {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin-bottom: 15px;
+}
+
+/* === Botones === */
+.btn-reservar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 45px;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.15s;
+}
+.btn-reservar:hover {
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  transform: scale(1.03);
+}
+
+/* === Modal === */
+.modal-fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  background: #1e293b;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 340px;
+  color: #f1f5f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+.portada-modal {
+  width: 160px;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.label-fecha {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #93c5fd;
+}
+.select-fecha {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #3b82f6;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+.acciones-modal {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+.btn-confirmar {
+  background: #16a34a;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-cancelar {
+  background: #dc2626;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* === Confirmación === */
+.confirmacion {
+  background: #ecfdf5;
+  color: #065f46;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #10b981;
+  font-weight: 500;
+}
+.btn-volver {
+  background: #1e3a8a;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.btn-volver:hover {
+  background: #1d4ed8;
+}

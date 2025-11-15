@@ -199,7 +199,7 @@ export default {
       }
     },
 
-    // Login (inicia 2FA)
+    // LOGIN (inicia 2FA) - completa y con logging
     async enviarLogin() {
       if (!this.email || !this.password) return alert('Email y contraseña son obligatorios.');
       this.loading = true;
@@ -210,16 +210,20 @@ export default {
           body: JSON.stringify({ email: this.email, password: this.password })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Credenciales inválidas');
+        console.log('LOGIN response', res.status, data);
+
+        if (!res.ok) throw new Error(data.error || data.message || 'Credenciales inválidas');
 
         if (data.need2FA) {
           this.need2FA = true;
           this.userId2FA = data.userId;
           this.paso = 'verify';
-          this.mensaje = 'Se envió un código 2FA. Revisa la consola del servidor (modo dev) o tu email/SMS.';
+          this.mensaje = 'Se envió un código 2FA. Revisa tu email / SMS o la consola del servidor (modo dev).';
         } else if (data.token) {
+          // Guardar token *antes* de redirigir
           localStorage.setItem('token', data.token);
-          this._redirigirPostLogin();
+          console.log('Token guardado tras login sin 2FA');
+          await this._redirigirPostLogin();
         } else {
           alert('Respuesta inesperada del servidor');
         }
@@ -231,10 +235,13 @@ export default {
       }
     },
 
-    // Verificar 2FA
+    // Verificar 2FA - completa y segura
     async verificarCodigo() {
       if (!this.userId2FA) return alert('No hay sesión 2FA iniciada. Vuelve a hacer login.');
-      if (!this.codigoIngresado || this.codigoIngresado.length < 4) return alert('Ingresa el código 2FA');
+      // valida exactamente 6 dígitos (ajusta si tu backend usa otra longitud)
+      if (!this.codigoIngresado || String(this.codigoIngresado).trim().length !== 6) {
+        return alert('Ingresa el código 2FA de 6 dígitos');
+      }
 
       this.loading = true;
       try {
@@ -244,13 +251,16 @@ export default {
           body: JSON.stringify({ userId: this.userId2FA, code: this.codigoIngresado })
         });
         const data = await res.json();
+        console.log('VERIFY-2FA response', res.status, data);
         if (!res.ok) throw new Error(data.error || 'Código inválido');
 
         if (data.token) {
+          // guardar token ANTES de resetear estados o redirigir
           localStorage.setItem('token', data.token);
-          alert('Autenticado correctamente 🎉');
-          this.resetAll();
-          this._redirigirPostLogin();
+          console.log('Token guardado tras 2FA:', data.token);
+          // redirige primero (para que el guard encuentre token), luego limpia estados
+          await this._redirigirPostLogin();
+          this.resetAll(); // limpias la vista después de la redirección para evitar "volver" a login
         } else {
           alert('Autenticado, pero no se retornó token');
         }
@@ -285,19 +295,26 @@ export default {
       }
     },
 
-    // Redirigir después del login
-    _redirigirPostLogin() {
+    // Redirigir después del login - intenta varias rutas comunes
+    async _redirigirPostLogin() {
       try {
-        const routeName = 'GestionPrestamos'; // ajusta si tu ruta tiene otro nombre
-        if (this.$router && this.$router.getRoutes && this.$router.getRoutes().some(r => r.name === routeName)) {
-          this.$router.push({ name: routeName });
-          return;
+        // DEBUG: muestra rutas conocidas en consola
+        if (this.$router && this.$router.getRoutes) {
+          console.log('Rutas disponibles:', this.$router.getRoutes().map(r => r.name));
         }
-        // fallback a ListaLibros por nombre o a '/'
-        if (this.$router && this.$router.getRoutes && this.$router.getRoutes().some(r => r.name === 'ListaLibros')) {
-          this.$router.push({ name: 'ListaLibros' });
-          return;
+
+        // Preferencias de redirección
+        const preferidas = ['GestionPrestamos', 'Biblioteca', 'ListaLibros', 'Home'];
+        for (const name of preferidas) {
+          if (this.$router && this.$router.getRoutes && this.$router.getRoutes().some(r => r.name === name)) {
+            console.log('Redirigiendo a', name);
+            await this.$router.push({ name });
+            return;
+          }
         }
+
+        // fallback a '/'
+        console.warn('No se encontró ruta preferida, redirigiendo a /');
         window.location.href = '/';
       } catch (e) {
         console.error('Error al redirigir post-login:', e);
@@ -309,5 +326,6 @@ export default {
 </script>
 
 <style src="../assets/paginaInicio.css"></style>
+
 
 
