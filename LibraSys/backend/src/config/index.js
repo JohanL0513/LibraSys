@@ -15,6 +15,7 @@ module.exports = {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   },
   twofa: {
+    
     ttlMs: 5 * 60 * 1000 // 5 minutos
   }
-};
+};    
